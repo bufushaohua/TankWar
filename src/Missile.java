@@ -11,6 +11,7 @@ public class Missile {
 	Tank.Direction dir;
 	
 	private boolean Live = true;
+	private TankClient tc;
 	
 	//子弹的死活
 	public boolean isLive() {
@@ -23,7 +24,16 @@ public class Missile {
 		this.dir = dir;
 	}
 	
+	public Missile(int x, int y, Tank.Direction dir, TankClient tc){
+		this(x,y,dir);
+		this.tc = tc;
+	}
+	
 	public void draw(Graphics g){
+		if(!Live){
+			tc.missiles.remove(this);
+			return;
+		}
 		Color c = g.getColor();
 		g.setColor(Color.BLACK);
 		g.fillOval(x, y, WIDTH, HEIGHT);
@@ -68,5 +78,18 @@ public class Missile {
 			Live = false;
 		}
 		
+	}
+	
+	public Rectangle getRect(){
+		return new Rectangle(x, y, WIDTH, HEIGHT);
+	}
+	
+	public boolean hitTank(Tank t){
+		if(this.getRect().intersects(t.getRect()) && t.isLive()){
+			t.setLive(false);
+			this.Live = false;
+			return true;
+		}
+		return false;
 	}
 }

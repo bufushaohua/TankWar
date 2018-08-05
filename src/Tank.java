@@ -11,7 +11,12 @@ public class Tank {
 	public static final int HEIGHT = 30;
 	
 	TankClient tc;
-	int x,y;
+	
+	private boolean good;
+	
+	private boolean live = true;
+	
+	private int x,y;
 	
 	private boolean bL=false, bR=false, bU=false, bD=false;
 	enum Direction {L, LU, U, RU, R, RD, D, LD, STOP};
@@ -19,19 +24,30 @@ public class Tank {
 	private Direction dir = Direction.STOP;
 	private Direction ptDir = Direction.D;
 	
-	public Tank(int x,int y){
+	public boolean isLive() {
+		return live;
+	}
+
+	public void setLive(boolean live) {
+		this.live = live;
+	}
+
+	public Tank(int x,int y, boolean good){
 		this.x = x;
 		this.y = y;
+		this.good = good;
 	}
 	
-	public Tank(int x, int y, TankClient tc){
-		this(x,y);
+	public Tank(int x, int y, boolean good, TankClient tc){
+		this(x, y, good);
 		this.tc = tc;
 	}
 	
 	public void draw(Graphics g){
+		if(!live) return;
 		Color c = g.getColor();
-		g.setColor(Color.RED);
+		if(good) g.setColor(Color.RED);
+		else  g.setColor(Color.BLUE);
 		g.fillOval(x, y, WIDTH, HEIGHT);
 		g.setColor(c);
 		
@@ -103,6 +119,11 @@ public class Tank {
 			this.ptDir = this.dir;
 		}
 		
+		if(x < 0) x = 0;
+		if(y < 30) y = 30;
+		if(x + Tank.WIDTH > TankClient.GAME_WIDTH) x = TankClient.GAME_WIDTH - Tank.WIDTH;
+		if(y + Tank.HEIGHT >TankClient.GAME_HEIGHT) y =TankClient.GAME_HEIGHT - Tank.HEIGHT;
+		
 	}
 	
 	public void keyPressed(KeyEvent e){
@@ -173,9 +194,13 @@ public class Tank {
 	public Missile fire(){
 		int x = this.x + WIDTH/2 - Missile.WIDTH/2;
 		int y = this.y + HEIGHT/2 - Missile.HEIGHT/2;
-		Missile m = new Missile(x, y, ptDir);
+		Missile m = new Missile(x, y, ptDir, this.tc);
 		tc.missiles.add(m);
 		return m;
 	}
 
+	public Rectangle getRect(){
+		return new Rectangle(x, y, WIDTH, HEIGHT);
+	}
+	
 }
