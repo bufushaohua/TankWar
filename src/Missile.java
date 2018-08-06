@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.List;
 
 public class Missile {
 	public static final int XSPEED = 10;
@@ -10,6 +11,7 @@ public class Missile {
 	int x,y;
 	Tank.Direction dir;
 	
+	private boolean good;
 	private boolean Live = true;
 	private TankClient tc;
 	
@@ -24,8 +26,9 @@ public class Missile {
 		this.dir = dir;
 	}
 	
-	public Missile(int x, int y, Tank.Direction dir, TankClient tc){
+	public Missile(int x, int y, boolean good, Tank.Direction dir, TankClient tc){
 		this(x,y,dir);
+		this.good = good;
 		this.tc = tc;
 	}
 	
@@ -35,7 +38,10 @@ public class Missile {
 			return;
 		}
 		Color c = g.getColor();
-		g.setColor(Color.BLACK);
+		if(good){
+			g.setColor(Color.CYAN);
+		}
+		else g.setColor(Color.BLACK);
 		g.fillOval(x, y, WIDTH, HEIGHT);
 		g.setColor(c);
 		
@@ -85,7 +91,7 @@ public class Missile {
 	}
 	
 	public boolean hitTank(Tank t){
-		if(this.getRect().intersects(t.getRect()) && t.isLive()){
+		if(this.isLive() && this.getRect().intersects(t.getRect()) && t.isLive() && this.good != t.isGood()){
 			t.setLive(false);
 			this.Live = false;
 			Explode e = new Explode(x, y, tc);
@@ -94,4 +100,22 @@ public class Missile {
 		}
 		return false;
 	}
+	
+	public boolean hitTanks(List<Tank> Tanks){
+		for(int i=0; i<Tanks.size(); i++){
+			if(hitTank(Tanks.get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean hitWall(Wall w){
+		if(this.Live && this.getRect().intersects(w.getRect())){
+			this.Live = false;
+			return false;
+		}
+		return false;
+	}
+	
 }

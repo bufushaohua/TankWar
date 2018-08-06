@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.concurrent.atomic.LongAccumulator;
-
+import java.util.Random;
 import javax.swing.*;
 
 public class Tank {
@@ -16,7 +15,12 @@ public class Tank {
 	
 	private boolean live = true;
 	
+	private static Random r = new Random();
+	private int step = r.nextInt(12) + 3;
+	
 	private int x,y;
+	//上一步的位置
+	private int oldX,oldY;
 	
 	private boolean bL=false, bR=false, bU=false, bD=false;
 	enum Direction {L, LU, U, RU, R, RD, D, LD, STOP};
@@ -28,6 +32,10 @@ public class Tank {
 		return live;
 	}
 
+	public boolean isGood() {
+		return good;
+	}
+	
 	public void setLive(boolean live) {
 		this.live = live;
 	}
@@ -36,6 +44,8 @@ public class Tank {
 		this.x = x;
 		this.y = y;
 		this.good = good;
+		this.oldX = x;
+		this.oldY = y;
 	}
 	
 	public Tank(int x, int y, boolean good, TankClient tc){
@@ -44,7 +54,12 @@ public class Tank {
 	}
 	
 	public void draw(Graphics g){
-		if(!live) return;
+		if(!live){ 
+			if(!good){
+				tc.tanks.remove(this);
+			}
+			return;
+		}
 		Color c = g.getColor();
 		if(good) g.setColor(Color.RED);
 		else  g.setColor(Color.BLUE);
@@ -82,6 +97,12 @@ public class Tank {
 	}
 	
 	void move(){
+		
+		//记录上一步的x和 y的值 
+		this.oldX = x; 
+		this.oldY = y;
+		
+		
 		switch(dir){
 			case L:
 				x -= XSPEED;
@@ -123,6 +144,20 @@ public class Tank {
 		if(y < 30) y = 30;
 		if(x + Tank.WIDTH > TankClient.GAME_WIDTH) x = TankClient.GAME_WIDTH - Tank.WIDTH;
 		if(y + Tank.HEIGHT >TankClient.GAME_HEIGHT) y =TankClient.GAME_HEIGHT - Tank.HEIGHT;
+		
+		if(!good){
+			if(step == 0){
+				step = r.nextInt(12) + 3;
+				
+				Direction[] dirs = Direction.values();
+				int rn = r.nextInt(dirs.length);
+				dir = dirs[rn];
+			}
+			
+			step--;
+			
+			if(r.nextInt(40) > 38) this.fire();
+		}
 		
 	}
 	
@@ -192,15 +227,25 @@ public class Tank {
 	}
 
 	public Missile fire(){
+		if(!live) return null;
 		int x = this.x + WIDTH/2 - Missile.WIDTH/2;
 		int y = this.y + HEIGHT/2 - Missile.HEIGHT/2;
-		Missile m = new Missile(x, y, ptDir, this.tc);
+		Missile m = new Missile(x, y, good, ptDir, this.tc);
 		tc.missiles.add(m);
 		return m;
 	}
 
 	public Rectangle getRect(){
 		return new Rectangle(x, y, WIDTH, HEIGHT);
+	}
+	
+	public boolean tankHitWall(Wall w){
+		if(this.live && this.getRect().intersects(w.getRect())){
+			this.x = oldX;
+			this.y = oldY;
+			return false;
+		}
+		return false;
 	}
 	
 }
