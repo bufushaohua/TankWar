@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
+import java.util.List;
 import javax.swing.*;
 
 public class Tank {
@@ -13,7 +14,11 @@ public class Tank {
 	
 	private boolean good;
 	
+	private int life = 100;
+	
 	private boolean live = true;
+	
+	private BloodBar bb = new BloodBar();
 	
 	private static Random r = new Random();
 	private int step = r.nextInt(12) + 3;
@@ -28,6 +33,14 @@ public class Tank {
 	private Direction dir = Direction.STOP;
 	private Direction ptDir = Direction.D;
 	
+	public int getLife() {
+		return life;
+	}
+
+	public void setLife(int life) {
+		this.life = life;
+	}
+
 	public boolean isLive() {
 		return live;
 	}
@@ -65,6 +78,9 @@ public class Tank {
 		else  g.setColor(Color.BLUE);
 		g.fillOval(x, y, WIDTH, HEIGHT);
 		g.setColor(c);
+		
+		//画血条
+		bb.draw(g);
 		
 		switch(ptDir){
 			case L:
@@ -161,6 +177,11 @@ public class Tank {
 		
 	}
 	
+	public void stay(){
+		x = oldX;
+		y = oldY;
+	}
+	
 	public void keyPressed(KeyEvent e){
 		int  key = e.getKeyCode();		
 		switch(key){
@@ -208,7 +229,8 @@ public class Tank {
 		case KeyEvent.VK_S:
 			bD = false;
 			break;
-		default :
+		case KeyEvent.VK_0:
+			superFire();
 			break;
 		}
 		locateDirection();
@@ -235,17 +257,69 @@ public class Tank {
 		return m;
 	}
 
+	public Missile fire(Direction dir){
+		if(!live) return null;
+		int x = this.x + WIDTH/2 - Missile.WIDTH/2;
+		int y = this.y + HEIGHT/2 - Missile.HEIGHT/2;
+		Missile m = new Missile(x, y, good, dir, this.tc);
+		tc.missiles.add(m);
+		return m;
+	}
+	
 	public Rectangle getRect(){
 		return new Rectangle(x, y, WIDTH, HEIGHT);
 	}
 	
 	public boolean tankHitWall(Wall w){
 		if(this.live && this.getRect().intersects(w.getRect())){
-			this.x = oldX;
-			this.y = oldY;
+			this.stay();
 			return false;
 		}
 		return false;
+	}
+	
+	public boolean tankWithTank(List<Tank> tanks){
+		for(int i=0; i<tanks.size(); i++){
+			Tank t = tanks.get(i);
+			if(this != t){
+				if(this.live && t.isLive() && this.getRect().intersects(t.getRect())){
+					this.stay();
+					t.stay();
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+	
+	//发射超级炮弹
+	public void superFire(){
+		Direction[] dirs = Direction.values();
+		for(int i=0; i<8; i++){
+			fire(dirs[i]);
+		}
+	}
+	
+	//血条类
+	public class BloodBar{
+		public void draw(Graphics g){
+			switch(life){
+				case 20:
+					g.setColor(new Color(255,0,0));
+				case 40:
+					g.setColor(new Color(255,69,0));
+				case 60:
+					g.setColor(new Color(255,0,0));
+				case 80:
+					g.setColor(new Color(255,0,0));
+				case 100:
+					g.setColor(new Color(178,34,34));
+			}
+			g.drawRect(x, y-7, WIDTH, 5);
+			int w = WIDTH * life/100;
+			g.fillRect(x, y-7, w, 5);
+			
+		}
 	}
 	
 }
