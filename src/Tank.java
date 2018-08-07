@@ -80,7 +80,11 @@ public class Tank {
 		g.setColor(c);
 		
 		//画血条
-		bb.draw(g);
+		if(this.isGood()) bb.draw(g);
+		else {
+			this.setLife(20);
+			bb.draw(g);
+		}
 		
 		switch(ptDir){
 			case L:
@@ -185,6 +189,13 @@ public class Tank {
 	public void keyPressed(KeyEvent e){
 		int  key = e.getKeyCode();		
 		switch(key){
+		//判断我军坦克是否死亡 死亡按~键复活
+		case KeyEvent.VK_F1:
+			if(!this.isLive()){
+				this.setLive(true);
+				this.setLife(100);
+			}
+			break;
 		case KeyEvent.VK_RIGHT:
 		case KeyEvent.VK_D:
 			bR = true;
@@ -229,7 +240,7 @@ public class Tank {
 		case KeyEvent.VK_S:
 			bD = false;
 			break;
-		case KeyEvent.VK_0:
+		case KeyEvent.VK_NUMPAD0:
 			superFire();
 			break;
 		}
@@ -303,21 +314,13 @@ public class Tank {
 	//血条类
 	public class BloodBar{
 		public void draw(Graphics g){
-			switch(life){
-				case 20:
-					g.setColor(new Color(255,0,0));
-				case 40:
-					g.setColor(new Color(255,69,0));
-				case 60:
-					g.setColor(new Color(255,0,0));
-				case 80:
-					g.setColor(new Color(255,0,0));
-				case 100:
-					g.setColor(new Color(178,34,34));
-			}
+			if(life == 100) g.setColor(new Color(25,25,112));
+			else if(life == 80) g.setColor(new Color(184,134,11));
+			else if(life == 60) g.setColor(new Color(0,0,0));
+			else if(life == 40) g.setColor(new Color(50,205,50));
+			else if(life == 20) g.setColor(new Color(255,0,0));
 			g.drawRect(x, y-7, WIDTH, 5);
-			int w = WIDTH * life/100;
-			g.fillRect(x, y-7, w, 5);
+			g.fillRect(x, y-7, WIDTH, 5);
 			
 		}
 	}

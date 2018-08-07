@@ -1,11 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import java.util.Random;
 import java.util.ArrayList;
 
 public class TankClient extends Frame {
 	public static final int GAME_WIDTH = 800;
 	public static final int GAME_HEIGHT = 600;
+	
+	private Random rd = new Random();
 	
 	Tank myTank = new Tank(50, 400, true, this);
 	Tank enemyTank = new Tank(100, 100, false, this);
@@ -30,6 +33,15 @@ public class TankClient extends Frame {
 		g.drawString("explodes count: " + explodes.size(), 6, 50);
 		g.drawString("tanks count: " + tanks.size(), 6, 60);
 		g.drawString("mytank life: " + myTank.getLife(), 6, 70);
+		
+		//敌方坦克死光后重新生成
+		if(tanks.size() <= 0) {
+			for(int i=0; i<5; i++){
+				int r = rd.nextInt(10); 
+				tanks.add(new Tank(50 + 40*(i+1),45 + r,false,this));
+				tanks.add(new Tank(60 + 40*(i+1), 495 + r, false, this));
+			}
+		}
 		
 		for(int i=0;i<missiles.size();i++){
 			Missile m = missiles.get(i);
@@ -80,7 +92,7 @@ public class TankClient extends Frame {
 		}
 		Graphics gOffScreenImage = offScreenImage.getGraphics();
 		Color c = gOffScreenImage.getColor();
-		gOffScreenImage.setColor(Color.GREEN);
+		gOffScreenImage.setColor(new Color(216,191,216));
 		gOffScreenImage.fillRect(0, 0, GAME_WIDTH,GAME_HEIGHT);
 		gOffScreenImage.setColor(c);
 		paint(gOffScreenImage);
@@ -99,7 +111,7 @@ public class TankClient extends Frame {
 		this.setVisible(true);
 		this.setTitle("坦克大战");
 		this.setResizable(false);
-		this.setBackground(Color.GREEN);
+		this.setBackground(new Color(216,191,216));
 		
 		this.addKeyListener(new KeyMonitor());
 		

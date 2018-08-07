@@ -13,7 +13,10 @@ public class Wall {
 	}
 	
 	public void draw(Graphics g){
+		Color c = g.getColor();
+		g.setColor(new Color(128,128,0));
 		g.fillRect(x, y, w, h);
+		g.setColor(c);
 	}
 	
 	public Rectangle getRect(){
