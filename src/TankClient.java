@@ -1,10 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.List;
 import java.util.Random;
-import javazoom.jl.player.Player;
 import java.util.ArrayList;
-import java.io.*;
 
 public class TankClient extends Frame {
 	public static final int GAME_WIDTH = 800;
@@ -13,7 +12,7 @@ public class TankClient extends Frame {
 	private Random rd = new Random();
 	
 	Tank myTank = new Tank(50, 400, true, this);
-	Tank enemyTank = new Tank(100, 100, false, this);
+	//Tank enemyTank = new Tank(100, 100, false, this);
 	
 	//两堵墙
 	Wall w1 = new Wall(150, 200, 20, 150, this),
@@ -44,7 +43,7 @@ public class TankClient extends Frame {
 				tanks.add(new Tank(60 + 40*(i+1), 495 + r, false, this));
 			}
 		}
-		
+		//子弹击打坦克和墙的方法
 		for(int i=0;i<missiles.size();i++){
 			Missile m = missiles.get(i);
 			/*if(!m.isLive()) missiles.remove(m);
@@ -109,7 +108,12 @@ public class TankClient extends Frame {
         BufferedInputStream stream=new BufferedInputStream(fis);
         Player player=new Player(stream);
         player.play();*/
+		//游戏背景音乐
+		GameMusic gm = new GameMusic(new File("E:\\DownLoad Files\\"
+							+ "CloudMusic DownLoad\\逃跑计划 - 夜空中最亮的星.mp3"));
+		gm.start();
 		
+		//生成10辆敌军坦克
 		for(int i=0; i<5; i++){
 			tanks.add(new Tank(50 + 40*(i+1),50,false,this));
 			tanks.add(new Tank(60 + 40*(i+1), 500, false, this));
