@@ -5,13 +5,16 @@ import java.util.List;
 import javax.swing.*;
 
 public class Tank {
-	private static final int XSPEED = 5, YSPEED = 5;
+	private static int XSPEED = 5, YSPEED = 5;
 	
 	public static final int WIDTH = 30;
 	public static final int HEIGHT = 30;
 	
 	TankClient tc;
 	
+	//判断按键盘加速键的次数
+	private int number = 1;
+	//判断坦克的好坏
 	private boolean good;
 	
 	private int life = 100;
@@ -189,6 +192,19 @@ public class Tank {
 	public void keyPressed(KeyEvent e){
 		int  key = e.getKeyCode();		
 		switch(key){
+		//不论好坏，键盘按1加速,并判断按下的次数
+		case KeyEvent.VK_NUMPAD1:
+			if(number == 2){
+				XSPEED = 10;
+				YSPEED = 10;
+				number = 1;
+			}
+			else{
+				XSPEED = 5;
+				YSPEED = 5;
+				number = 2;
+			}
+			break;
 		//判断我军坦克是否死亡 死亡按~键复活
 		case KeyEvent.VK_F1:
 			if(!this.isLive()){

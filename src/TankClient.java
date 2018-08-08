@@ -2,7 +2,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import java.util.Random;
+import javazoom.jl.player.Player;
 import java.util.ArrayList;
+import java.io.*;
 
 public class TankClient extends Frame {
 	public static final int GAME_WIDTH = 800;
@@ -99,7 +101,14 @@ public class TankClient extends Frame {
 		g.drawImage(offScreenImage, 0, 0, null);
 	}
 
-	public void lauchFrame() {
+	public void lauchFrame() throws Exception {
+		/*
+		//为游戏添加背景音乐 运用了JavaMusic包
+		File file=new File("E:\\DownLoad Files\\CloudMusic DownLoad\\逃跑计划 - 夜空中最亮的星.mp3");
+        FileInputStream fis=new FileInputStream(file);
+        BufferedInputStream stream=new BufferedInputStream(fis);
+        Player player=new Player(stream);
+        player.play();*/
 		
 		for(int i=0; i<5; i++){
 			tanks.add(new Tank(50 + 40*(i+1),50,false,this));
@@ -125,9 +134,15 @@ public class TankClient extends Frame {
 		new Thread (new PaintThread()).start();
 	}
 
+	//游戏主方法
 	public static void main(String[] args) {
 		TankClient tc = new TankClient();
-		tc.lauchFrame();
+		try {
+			tc.lauchFrame();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private class PaintThread implements Runnable {
