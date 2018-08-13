@@ -109,8 +109,8 @@ public class TankClient extends Frame {
         Player player=new Player(stream);
         player.play();*/
 		//游戏背景音乐
-		GameMusic gm = new GameMusic(new File("E:\\DownLoad Files\\"
-							+ "CloudMusic DownLoad\\逃跑计划 - 夜空中最亮的星.mp3"));
+		GameMusic gm = new GameMusic(new File("F:\\MusicDownload\\CloudMusic\\"
+												+ "Paula DeAnda - Why Would I Ever.mp3"));
 		gm.start();
 		
 		//生成10辆敌军坦克
